@@ -11,9 +11,22 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String   @id @default(uuid()) @map("_id") @db.ObjectId
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model DataPoint {
+  id             String   @id @default(uuid()) @map("_id")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  device         String
+  timestamp      DateTime
+  windspeed      Int
+  wind_direction String
+  pm1            Int
+  pm25           Int
+  pm10           Int
 }
