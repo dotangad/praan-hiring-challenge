@@ -13,6 +13,7 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { API_BASE_URL } from "../lib/api";
+import { useGuest } from "../lib/auth";
 
 type Inputs = {
   email: string;
@@ -20,6 +21,7 @@ type Inputs = {
 };
 
 export default function Register() {
+  useGuest();
   const { register, handleSubmit } = useForm<Inputs>();
 
   const registerMutation = useMutation({
@@ -31,11 +33,8 @@ export default function Register() {
         },
         body: JSON.stringify(data),
       });
-      console.log(res);
       return res.json();
     },
-    onSuccess: console.log,
-    onError: console.log,
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) =>

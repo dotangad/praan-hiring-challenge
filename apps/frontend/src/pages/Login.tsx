@@ -14,7 +14,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
-import { tokenAtom } from "../lib/auth";
+import { tokenAtom, useGuest } from "../lib/auth";
 import { API_BASE_URL } from "../lib/api";
 
 type Inputs = {
@@ -23,6 +23,7 @@ type Inputs = {
 };
 
 export default function Login() {
+  useGuest();
   const {
     register,
     handleSubmit,
@@ -46,11 +47,9 @@ export default function Login() {
       };
     },
     onSuccess: ({ success, status, token: tokenStr }) => {
-      if (success) {
+      if (success && status === 200) {
         setToken(tokenStr);
         navigate("/");
-        // history.pushState({}, "", "/");
-        // history.forward()
       }
     },
     onError: console.log,

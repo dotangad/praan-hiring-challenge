@@ -7,6 +7,7 @@ import Layout from "./pages/Layout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import "./index.css";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 const theme = extendTheme({});
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      // {index: true, element: <Index />},
+      { index: true, element: <Dashboard /> },
       {
         path: "login",
         element: <Login />,
