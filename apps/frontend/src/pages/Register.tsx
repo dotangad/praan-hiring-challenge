@@ -12,9 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import { useAtom } from "jotai";
-import { tokenAtom } from "../lib/auth";
 import { API_BASE_URL } from "../lib/api";
 
 type Inputs = {
@@ -22,41 +19,27 @@ type Inputs = {
   password: string;
 };
 
-export default function Login() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Inputs>();
-  const [token, setToken] = useAtom(tokenAtom);
-  const navigate = useNavigate();
+export default function Register() {
+  const { register, handleSubmit } = useForm<Inputs>();
 
-  const loginMutation = useMutation({
+  const registerMutation = useMutation({
     mutationFn: async (data: Inputs) => {
-      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-      return {
-        ...(await res.json()),
-        status: res.status,
-      };
+      console.log(res);
+      return res.json();
     },
-    onSuccess: ({ success, status, token: tokenStr }) => {
-      if (success) {
-        setToken(tokenStr);
-        navigate("/");
-        // history.pushState({}, "", "/");
-        // history.forward()
-      }
-    },
+    onSuccess: console.log,
     onError: console.log,
   });
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => loginMutation.mutate(data);
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    registerMutation.mutate(data);
 
   return (
     <Flex w="100%" h="100%" alignItems="center" justifyContent="center">
@@ -71,7 +54,7 @@ export default function Login() {
           my={5}
           mb={10}
         >
-          Login
+          Register
         </Text>
 
         <Flex
@@ -101,16 +84,16 @@ export default function Login() {
             />
           </FormControl>
 
-          {loginMutation.data &&
-            (loginMutation.data?.success === true ? (
+          {registerMutation.data &&
+            (registerMutation.data?.success === true ? (
               <Alert status="success">
                 <AlertIcon />
-                Logged in
+                {registerMutation.data?.message}
               </Alert>
             ) : (
               <Alert status="error">
                 <AlertIcon />
-                {loginMutation.data?.message}
+                {registerMutation.data?.message}
               </Alert>
             ))}
 
@@ -118,10 +101,10 @@ export default function Login() {
             <Button
               type="submit"
               w="100%"
-              isLoading={loginMutation.isLoading}
-              isDisabled={loginMutation.isLoading}
+              isLoading={registerMutation.isLoading}
+              isDisabled={registerMutation.isLoading}
             >
-              Login
+              Register
             </Button>
           </Box>
         </Flex>

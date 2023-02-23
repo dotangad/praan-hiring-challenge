@@ -26,7 +26,7 @@ export const login = [
         if (!user) {
           return res
             .status(401)
-            .json({ success: true, message: "Invalid credentials" });
+            .json({ success: false, message: "Invalid credentials" });
         }
 
         req.login(user, { session: false }, async (error) => {
@@ -35,7 +35,7 @@ export const login = [
           const body = { id: user.id, email: user.email };
           const token = jwt.sign({ user: body }, process.env.JWT_SECRET ?? "");
 
-          return res.json({ token });
+          return res.status(200).json({ success: true, token });
         });
       } catch (error) {
         return next(error);
@@ -44,12 +44,11 @@ export const login = [
   },
 ];
 
-export const protectedRoute = [
+export const me = [
   passport.authenticate("jwt", { session: false }),
   async (req: Request, res: Response) => {
     res.json({
       success: true,
-      message: "You are successfully authenticated to this route!",
       user: req.user,
     });
   },

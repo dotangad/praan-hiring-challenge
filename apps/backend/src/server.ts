@@ -2,6 +2,7 @@ import express, { ErrorRequestHandler } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import bodyParser from "body-parser";
+import cors from "cors";
 import * as AuthController from "./controllers/AuthController";
 import * as BulkUploadController from "./controllers/BulkUploadController";
 import * as DataController from "./controllers/DataController";
@@ -19,6 +20,7 @@ import "./lib/passport";
 // START Middleware
 // ----------------------------------------
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
@@ -37,7 +39,7 @@ app.get("/", (_, res) =>
 // Authentication routes
 app.post("/api/auth/register", ...AuthController.register);
 app.post("/api/auth/login", ...AuthController.login);
-app.post("/api/auth/protected", ...AuthController.protectedRoute);
+app.get("/api/auth/me", ...AuthController.me);
 
 // Bulk upload from Excel sheet
 app.post("/api/bulk_upload", ...BulkUploadController.bulkUpload);

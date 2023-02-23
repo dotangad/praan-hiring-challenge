@@ -22,7 +22,11 @@ passport.use(
 
         return done(null, user);
       } catch (error) {
-        done(error);
+        if ((error as Error).message.includes("Unique constraint ")) {
+          done({ status: 400, message: "Email already in use" });
+        }
+
+        return done(error);
       }
     }
   )
@@ -40,13 +44,13 @@ passport.use(
         const user = await prisma.user.findUnique({ where: { email } });
 
         if (!user) {
-          return done(null, false, { message: "User not found" });
+          return done({ status: 401, message: "User not found" }, false);
         }
 
         const validate = await bcrypt.compare(password, user.password);
 
         if (!validate) {
-          return done(null, false, { message: "Wrong Password" });
+          return done({ status: 401, message: "Invalid credentials" }, false);
         }
 
         return done(null, user, { message: "Logged in Successfully" });
