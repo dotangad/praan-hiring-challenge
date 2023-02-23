@@ -17,10 +17,16 @@ export const login = [
   async (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("login", async (err: any, user?: any) => {
       try {
-        if (err || !user) {
-          const error = new Error("An error occurred.");
+        if (err) {
+          const error = new Error(err.message);
 
           return next(error);
+        }
+
+        if (!user) {
+          return res
+            .status(401)
+            .json({ success: true, message: "Invalid credentials" });
         }
 
         req.login(user, { session: false }, async (error) => {

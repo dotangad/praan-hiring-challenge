@@ -3,3 +3,6 @@ node_modules
 .env
 
 mnt_uploads/
+
+# mlaunch data
+data/

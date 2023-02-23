@@ -4,7 +4,7 @@ import morgan from "morgan";
 import bodyParser from "body-parser";
 import * as AuthController from "./controllers/AuthController";
 import * as BulkUploadController from "./controllers/BulkUploadController";
-import * as QueryController from "./controllers/QueryController";
+import * as DataController from "./controllers/DataController";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -43,8 +43,8 @@ app.post("/api/auth/protected", ...AuthController.protectedRoute);
 app.post("/api/bulk_upload", ...BulkUploadController.bulkUpload);
 
 // Query data points
-// app.post("/api/data/query"); // body -> { devices: string[], startDate: DateTime, endDate: DateTime, metrics: string[] }
-app.post("/api/data/device/:device", ...QueryController.device);
+app.post("/api/data/query", ...DataController.query);
+app.post("/api/data/device/:device", ...DataController.device);
 
 // ----------------------------------------
 // END Routes
@@ -54,25 +54,25 @@ app.post("/api/data/device/:device", ...QueryController.device);
 // START Error handler
 // ----------------------------------------
 
-// app.all("*", (_, res) =>
-//   res.status(404).json({ success: false, message: "Not found" })
-// );
+app.all("*", (_, res) =>
+  res.status(404).json({ success: false, message: "Not found" })
+);
 
-// app.use(((err, req, res, next) => {
-//   if (process.env.NODE_ENV !== "production") {
-//     console.log(err);
-//   } else {
-//     // report error
-//   }
+app.use(((err, req, res, next) => {
+  if (process.env.NODE_ENV !== "production") {
+    console.log(err);
+  } else {
+    // report error
+  }
 
-//   // Set statusCode to 500 if it isn't already there
-//   err.statusCode = err.statusCode || 500;
-//   err.message = err.message || err.name || "Internal Server Error";
+  // Set statusCode to 500 if it isn't already there
+  err.statusCode = err.statusCode || 500;
+  err.message = err.message || err.name || "Internal Server Error";
 
-//   return res
-//     .status(err.statusCode)
-//     .json({ success: false, message: err.message });
-// }) as ErrorRequestHandler);
+  return res
+    .status(err.statusCode)
+    .json({ success: false, message: err.message });
+}) as ErrorRequestHandler);
 
 // ----------------------------------------
 // END Error handler
