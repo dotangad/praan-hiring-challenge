@@ -20,6 +20,10 @@ export const bulkUpload = [
   passport.authenticate("jwt", { session: false }),
   upload.array("raw_data"),
   async (req: Request, res: Response) => {
+    if (!req.files || !Array.isArray(req.files) || req.files.length === 0)
+      return res
+        .status(400)
+        .json({ success: false, message: "No files uploaded" });
     const file = (req.files as Express.Multer.File[])[0];
 
     // Validate mime type
@@ -98,6 +102,6 @@ export const bulkUpload = [
         .filter((x) => !!x) as DataPoint[],
     });
 
-    res.json({ success: true, message: "Data added" });
+    res.status(201).json({ success: true, message: "Data added" });
   },
 ];

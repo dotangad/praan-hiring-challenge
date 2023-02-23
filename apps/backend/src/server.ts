@@ -1,8 +1,10 @@
-import express, { Request, Response } from "express";
+import express, { ErrorRequestHandler } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import { login, protectedRoute, register } from "./controllers/AuthController";
-import { bulkUpload } from "./controllers/BulkUploadController";
+import bodyParser from "body-parser";
+import * as AuthController from "./controllers/AuthController";
+import * as BulkUploadController from "./controllers/BulkUploadController";
+import * as QueryController from "./controllers/QueryController";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -17,8 +19,8 @@ import "./lib/passport";
 // START Middleware
 // ----------------------------------------
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 // ----------------------------------------
@@ -28,22 +30,21 @@ app.use(morgan("dev"));
 // ----------------------------------------
 // START Routes
 // ----------------------------------------
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.get("/", (_, res) =>
+  res.status(418).json({ success: true, message: "I'm a teapot" })
+);
 
 // Authentication routes
-app.post("/api/auth/register", ...register);
-app.post("/api/auth/login", ...login);
-app.post("/api/auth/protected", ...protectedRoute);
+app.post("/api/auth/register", ...AuthController.register);
+app.post("/api/auth/login", ...AuthController.login);
+app.post("/api/auth/protected", ...AuthController.protectedRoute);
 
 // Bulk upload from Excel sheet
-app.post("/api/bulk_upload", ...bulkUpload);
+app.post("/api/bulk_upload", ...BulkUploadController.bulkUpload);
 
 // Query data points
 // app.post("/api/data/query"); // body -> { devices: string[], startDate: DateTime, endDate: DateTime, metrics: string[] }
-// app.post("/api/data/device/:deviceId"); // body -> { metrics: [] }
+app.post("/api/data/device/:device", ...QueryController.device);
 
 // ----------------------------------------
 // END Routes
@@ -53,14 +54,25 @@ app.post("/api/bulk_upload", ...bulkUpload);
 // START Error handler
 // ----------------------------------------
 
-app.use((err: Error, req: Request, res: Response) => {
-  console.error(err.stack);
-  res.status(500).json({
-    success: false,
-    message: err.message,
-    stack: process.env.NODE_ENV !== "production" ? err.stack : null,
-  });
-});
+// app.all("*", (_, res) =>
+//   res.status(404).json({ success: false, message: "Not found" })
+// );
+
+// app.use(((err, req, res, next) => {
+//   if (process.env.NODE_ENV !== "production") {
+//     console.log(err);
+//   } else {
+//     // report error
+//   }
+
+//   // Set statusCode to 500 if it isn't already there
+//   err.statusCode = err.statusCode || 500;
+//   err.message = err.message || err.name || "Internal Server Error";
+
+//   return res
+//     .status(err.statusCode)
+//     .json({ success: false, message: err.message });
+// }) as ErrorRequestHandler);
 
 // ----------------------------------------
 // END Error handler
