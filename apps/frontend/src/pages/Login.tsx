@@ -23,7 +23,6 @@ type Inputs = {
 };
 
 export default function Login() {
-  useGuest();
   const {
     register,
     handleSubmit,
@@ -59,7 +58,14 @@ export default function Login() {
 
   return (
     <Flex w="100%" h="100%" alignItems="center" justifyContent="center">
-      <Box w="xl" bg="white" shadow="xl" rounded="2xl" p={10}>
+      <Box
+        w="xl"
+        bg="white"
+        shadow="xl"
+        rounded="2xl"
+        p={10}
+        _dark={{ bg: "gray.700" }}
+      >
         <Text
           fontSize="2xl"
           fontWeight="extrabold"

@@ -8,9 +8,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import "./index.css";
 import Dashboard from "./pages/Dashboard";
+import BulkUpload from "./pages/BulkUpload";
 
 const queryClient = new QueryClient();
-const theme = extendTheme({});
+const theme = extendTheme({
+  initialColorMode: "light",
+  useSystemColorMode: false,
+});
 
 // TODO: add 404 page
 const router = createBrowserRouter([
@@ -26,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "register",
         element: <Register />,
+      },
+      {
+        path: "/upload",
+        element: <BulkUpload />,
       },
     ],
   },

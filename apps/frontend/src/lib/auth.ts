@@ -13,22 +13,14 @@ export const useProtected = () => {
   const meQuery = useQuery(["api.auth.me"], meFetcher({ token }));
 
   useEffect(() => {
-    if ((meQuery.data && !meQuery.data?.success) || !token) {
+    if (typeof token === "string") {
+      if (meQuery.data && !meQuery.data?.success) {
+        navigate("/login");
+      }
+    } else {
       navigate("/login");
     }
   }, [meQuery.data, token]);
-};
-
-export const useGuest = () => {
-  const navigate = useNavigate();
-  const [token] = useAtom(tokenAtom);
-  const meQuery = useQuery(["api.auth.me"], meFetcher({ token }));
-
-  useEffect(() => {
-    if (typeof token === "string" && meQuery.data && meQuery.data?.success) {
-      navigate("/");
-    }
-  }, [meQuery.data]);
 };
 
 export const meFetcher =

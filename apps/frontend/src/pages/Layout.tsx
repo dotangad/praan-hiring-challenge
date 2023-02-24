@@ -1,20 +1,31 @@
-import React from "react";
 import {
-  useLocation,
-  useNavigate,
-  Outlet,
-  Link as RouterLink,
-} from "react-router-dom";
-import { Flex, Box, Text, Image, Button, Link, Icon } from "@chakra-ui/react";
-import { AiOutlineLogin, AiOutlineUser, AiOutlineHome } from "react-icons/ai";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+  Box,
+  Button,
+  Flex,
+  Icon,
+  IconButton,
+  Image,
+  Link,
+  Text,
+  useColorMode,
+} from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
+import {
+  AiOutlineHome,
+  AiOutlineLineChart,
+  AiOutlineLogin,
+  AiOutlineUpload,
+  AiOutlineUser,
+} from "react-icons/ai";
+import { TbSun, TbMoon } from "react-icons/tb";
+import { BsWind } from "react-icons/bs";
+import { Link as RouterLink, Outlet, useLocation } from "react-router-dom";
 import { meFetcher, tokenAtom } from "../lib/auth";
 
 export default function Layout() {
   const location = useLocation();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { colorMode, toggleColorMode } = useColorMode();
   const [token, setToken] = useAtom(tokenAtom);
   const meQuery = useQuery(["api.auth.me"], meFetcher({ token }), {
     enabled: !!token,
@@ -39,11 +50,41 @@ export default function Layout() {
       icon: AiOutlineHome,
       showIf: meQuery.data?.user,
     },
+    {
+      label: "Bulk Upload",
+      path: "/upload",
+      icon: AiOutlineUpload,
+      showIf: meQuery.data?.user,
+    },
+    {
+      label: "Comparison Graphs",
+      path: "/charts/comparison",
+      icon: AiOutlineLineChart,
+      showIf: meQuery.data?.user,
+    },
+    {
+      label: "Time-series Graphs",
+      path: "/charts/timeseries",
+      icon: AiOutlineLineChart,
+      showIf: meQuery.data?.user,
+    },
+    {
+      label: "Wind Data",
+      path: "/charts/wind",
+      icon: BsWind,
+      showIf: meQuery.data?.user,
+    },
   ];
 
   return (
-    <Flex w="100vw" h="100vh" overflow="hidden" bg="gray.50">
-      <Flex w="500px" h="100%" overflow="hidden" p={10}>
+    <Flex
+      w="100vw"
+      h="100vh"
+      overflow="hidden"
+      bg="gray.50"
+      _dark={{ bg: "gray.800" }}
+    >
+      <Flex w="30vw" maxW="450px" h="100%" overflow="hidden" p={10}>
         <Flex
           bg="white"
           rounded="2xl"
@@ -51,21 +92,22 @@ export default function Layout() {
           p={5}
           w="100%"
           flexDir="column"
+          alignItems="center"
+          _dark={{
+            bg: "gray.700",
+          }}
         >
-          <Text
-            fontSize="2xl"
-            fontWeight="extrabold"
-            letterSpacing="widest"
-            casing="uppercase"
-            color="gray.400"
-            textAlign="center"
+          <Image
+            src={
+              colorMode === "light"
+                ? "https://praan.io/logos/praanwt.svg"
+                : "/praan-white.svg"
+            }
             my={5}
-          >
-            Dashboard
-          </Text>
-          <Box flex={1}>
-            {/* <pre>{JSON.stringify(meQuery.data, null, 2)}</pre> */}
-
+            w="50%"
+            h="auto"
+          />
+          <Box flex={1} w="100%">
             {links
               .filter((x) => x.showIf)
               .map(({ label, path, icon }, i) => (
@@ -78,27 +120,43 @@ export default function Layout() {
                   <Flex
                     alignItems="center"
                     columnGap={4}
+                    my={2}
                     px={5}
                     py={3}
                     bg={location.pathname === path ? "gray.100" : "white"}
                     rounded="md"
+                    _hover={{ bg: "gray.50" }}
+                    _dark={{
+                      _hover: { bg: "gray.600" },
+                      bg: location.pathname === path ? "gray.600" : "gray.700",
+                    }}
                   >
-                    <Icon as={icon} boxSize={6} color="gray.500" />
-                    <Text color="gray.600" fontSize="xl" fontWeight="semibold">
+                    <Icon
+                      as={icon}
+                      boxSize={6}
+                      color="gray.500"
+                      _dark={{ color: "gray.300" }}
+                    />
+                    <Text
+                      color="gray.600"
+                      fontSize="xl"
+                      fontWeight="semibold"
+                      _dark={{ color: "white" }}
+                    >
                       {label}
                     </Text>
                   </Flex>
                 </Link>
               ))}
           </Box>
-          <Flex my={5} mx={5} columnGap={5} alignItems="center">
+          <Flex mt={5} mx={5} columnGap={5} alignItems="center" w="100%">
             <Image src="/pfp.jpg" boxSize={16} rounded="full" />
-            <Box>
+
+            <Box flex={1}>
               {meQuery.data?.user ? (
                 <>
                   <Text>{meQuery.data?.user.email}</Text>
                   <Box>
-                    {/* TODO: make this work */}
                     <Button
                       mt={2}
                       size="xs"
@@ -118,6 +176,22 @@ export default function Layout() {
                 <>
                   <Text>Not Logged in</Text>
                 </>
+              )}
+            </Box>
+
+            <Box>
+              {colorMode === "light" ? (
+                <IconButton
+                  aria-label="Theme"
+                  icon={<TbMoon />}
+                  onClick={() => toggleColorMode()}
+                />
+              ) : (
+                <IconButton
+                  aria-label="Theme"
+                  icon={<TbSun />}
+                  onClick={() => toggleColorMode()}
+                />
               )}
             </Box>
           </Flex>

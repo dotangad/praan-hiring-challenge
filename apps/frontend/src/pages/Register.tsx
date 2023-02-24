@@ -21,7 +21,6 @@ type Inputs = {
 };
 
 export default function Register() {
-  useGuest();
   const { register, handleSubmit } = useForm<Inputs>();
 
   const registerMutation = useMutation({
@@ -42,7 +41,14 @@ export default function Register() {
 
   return (
     <Flex w="100%" h="100%" alignItems="center" justifyContent="center">
-      <Box w="xl" bg="white" shadow="xl" rounded="2xl" p={10}>
+      <Box
+        w="xl"
+        bg="white"
+        shadow="xl"
+        rounded="2xl"
+        p={10}
+        _dark={{ bg: "gray.700" }}
+      >
         <Text
           fontSize="2xl"
           fontWeight="extrabold"
