@@ -32,6 +32,7 @@ app.use(morgan("dev"));
 // ----------------------------------------
 // START Routes
 // ----------------------------------------
+
 app.get("/", (_, res) =>
   res.status(418).json({ success: true, message: "I'm a teapot" })
 );
