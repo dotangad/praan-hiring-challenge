@@ -14,7 +14,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
-import { tokenAtom, useGuest } from "../lib/auth";
+import { tokenAtom } from "../lib/auth";
 import { API_BASE_URL } from "../lib/api";
 
 type Inputs = {
@@ -46,9 +46,9 @@ export default function Login() {
       };
     },
     onSuccess: ({ success, status, token: tokenStr }) => {
-      if (success && status === 200) {
+      if (success) {
         setToken(tokenStr);
-        navigate("/");
+        window.location.href = "/";
       }
     },
     onError: console.log,

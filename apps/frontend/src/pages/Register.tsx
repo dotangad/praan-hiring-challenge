@@ -13,7 +13,6 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { API_BASE_URL } from "../lib/api";
-import { useGuest } from "../lib/auth";
 
 type Inputs = {
   email: string;

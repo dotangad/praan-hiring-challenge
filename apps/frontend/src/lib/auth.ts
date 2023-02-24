@@ -1,11 +1,18 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAtom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { atom, useAtom } from "jotai";
 import { useQuery } from "@tanstack/react-query";
 import { API_BASE_URL } from "./api";
 
-export const tokenAtom = atomWithStorage("token", false);
+const tokenAtomInit = atom(localStorage.getItem("token") ?? "");
+
+export const tokenAtom = atom(
+  (get) => get(tokenAtomInit),
+  (get, set, newStr) => {
+    set(tokenAtomInit, newStr as string);
+    localStorage.setItem("token", newStr as string);
+  }
+);
 
 export const useProtected = () => {
   const navigate = useNavigate();
@@ -13,14 +20,11 @@ export const useProtected = () => {
   const meQuery = useQuery(["api.auth.me"], meFetcher({ token }));
 
   useEffect(() => {
-    if (typeof token === "string") {
-      if (meQuery.data && !meQuery.data?.success) {
-        navigate("/login");
-      }
-    } else {
+    if (!meQuery.data) return;
+    if (!meQuery.data?.success) {
       navigate("/login");
     }
-  }, [meQuery.data, token]);
+  }, [meQuery.data]);
 };
 
 export const meFetcher =

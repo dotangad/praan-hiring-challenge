@@ -27,54 +27,49 @@ export default function Layout() {
   const location = useLocation();
   const { colorMode, toggleColorMode } = useColorMode();
   const [token, setToken] = useAtom(tokenAtom);
-  const meQuery = useQuery(["api.auth.me"], meFetcher({ token }), {
-    enabled: !!token,
-  });
+  const meQuery = useQuery(["api.auth.me"], meFetcher({ token }));
 
-  const links = [
-    {
-      label: "Login",
-      path: "/login",
-      icon: AiOutlineLogin,
-      showIf: token === false,
-    },
-    {
-      label: "Register",
-      path: "/register",
-      icon: AiOutlineUser,
-      showIf: token === false,
-    },
-    {
-      label: "Dashboard",
-      path: "/",
-      icon: AiOutlineHome,
-      showIf: meQuery.data?.user,
-    },
-    {
-      label: "Bulk Upload",
-      path: "/upload",
-      icon: AiOutlineUpload,
-      showIf: meQuery.data?.user,
-    },
-    {
-      label: "Comparison Graphs",
-      path: "/charts/comparison",
-      icon: AiOutlineLineChart,
-      showIf: meQuery.data?.user,
-    },
-    {
-      label: "Time-series Graphs",
-      path: "/charts/timeseries",
-      icon: AiOutlineLineChart,
-      showIf: meQuery.data?.user,
-    },
-    {
-      label: "Wind Data",
-      path: "/charts/wind",
-      icon: BsWind,
-      showIf: meQuery.data?.user,
-    },
-  ];
+  const links = {
+    authenticated: [
+      {
+        label: "Dashboard",
+        path: "/",
+        icon: AiOutlineHome,
+      },
+      {
+        label: "Bulk Upload",
+        path: "/upload",
+        icon: AiOutlineUpload,
+      },
+      {
+        label: "Comparison Graphs",
+        path: "/charts/comparison",
+        icon: AiOutlineLineChart,
+      },
+      {
+        label: "Time-series Graphs",
+        path: "/charts/timeseries",
+        icon: AiOutlineLineChart,
+      },
+      {
+        label: "Wind Data",
+        path: "/charts/wind",
+        icon: BsWind,
+      },
+    ],
+    guest: [
+      {
+        label: "Login",
+        path: "/login",
+        icon: AiOutlineLogin,
+      },
+      {
+        label: "Register",
+        path: "/register",
+        icon: AiOutlineUser,
+      },
+    ],
+  };
 
   return (
     <Flex
@@ -108,46 +103,49 @@ export default function Layout() {
             h="auto"
           />
           <Box flex={1} w="100%">
-            {links
-              .filter((x) => x.showIf)
-              .map(({ label, path, icon }, i) => (
-                <Link
-                  key={i}
-                  as={RouterLink}
-                  to={path}
-                  _hover={{ textDecoration: "none" }}
+            {(meQuery.data
+              ? meQuery.data?.success
+                ? links.authenticated
+                : links.guest
+              : []
+            ).map(({ label, path, icon }, i) => (
+              <Link
+                key={i}
+                as={RouterLink}
+                to={path}
+                _hover={{ textDecoration: "none" }}
+              >
+                <Flex
+                  alignItems="center"
+                  columnGap={4}
+                  my={2}
+                  px={5}
+                  py={3}
+                  bg={location.pathname === path ? "gray.100" : "white"}
+                  rounded="md"
+                  _hover={{ bg: "gray.50" }}
+                  _dark={{
+                    _hover: { bg: "gray.600" },
+                    bg: location.pathname === path ? "gray.600" : "gray.700",
+                  }}
                 >
-                  <Flex
-                    alignItems="center"
-                    columnGap={4}
-                    my={2}
-                    px={5}
-                    py={3}
-                    bg={location.pathname === path ? "gray.100" : "white"}
-                    rounded="md"
-                    _hover={{ bg: "gray.50" }}
-                    _dark={{
-                      _hover: { bg: "gray.600" },
-                      bg: location.pathname === path ? "gray.600" : "gray.700",
-                    }}
+                  <Icon
+                    as={icon}
+                    boxSize={6}
+                    color="gray.500"
+                    _dark={{ color: "gray.300" }}
+                  />
+                  <Text
+                    color="gray.600"
+                    fontSize="xl"
+                    fontWeight="semibold"
+                    _dark={{ color: "white" }}
                   >
-                    <Icon
-                      as={icon}
-                      boxSize={6}
-                      color="gray.500"
-                      _dark={{ color: "gray.300" }}
-                    />
-                    <Text
-                      color="gray.600"
-                      fontSize="xl"
-                      fontWeight="semibold"
-                      _dark={{ color: "white" }}
-                    >
-                      {label}
-                    </Text>
-                  </Flex>
-                </Link>
-              ))}
+                    {label}
+                  </Text>
+                </Flex>
+              </Link>
+            ))}
           </Box>
           <Flex mt={5} mx={5} columnGap={5} alignItems="center" w="100%">
             <Image src="/pfp.jpg" boxSize={16} rounded="full" />
