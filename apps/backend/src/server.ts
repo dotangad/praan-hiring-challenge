@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const app = express();
-const port = process.env.BACKEND_PORT;
+const port = process.env.PORT;
 
 import "./lib/passport";
 
