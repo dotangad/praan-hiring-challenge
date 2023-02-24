@@ -20,10 +20,10 @@ import {
 } from "react-icons/ai";
 import { TbSun, TbMoon } from "react-icons/tb";
 import { BsWind } from "react-icons/bs";
-import { Link as RouterLink, Outlet, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { meFetcher, tokenAtom } from "../lib/auth";
 
-export default function Layout() {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { colorMode, toggleColorMode } = useColorMode();
   const [token, setToken] = useAtom(tokenAtom);
@@ -51,11 +51,11 @@ export default function Layout() {
         path: "/charts/timeseries",
         icon: AiOutlineLineChart,
       },
-      {
-        label: "Wind Data",
-        path: "/charts/wind",
-        icon: BsWind,
-      },
+      // {
+      //   label: "Wind Data",
+      //   path: "/charts/wind",
+      //   icon: BsWind,
+      // },
     ],
     guest: [
       {
@@ -197,7 +197,7 @@ export default function Layout() {
       </Flex>
       <Box flex={1} h="100%" overflowY="auto">
         <Box w="100%" h="100%" p={10}>
-          <Outlet />
+          {children}
         </Box>
       </Box>
     </Flex>
